@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  n8n:
+    image: n8n-python:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_PROTOCOL: "https"
+      N8N_HOST: "n8n.cedric-coding-projects.com"
+      WEBHOOK_TUNNEL_URL: "https://n8n.cedric-coding-projects.com/"
+      WEBHOOK_URL: "https://n8n.cedric-coding-projects.com/"
+      N8N_SECURE_COOKIE: "true"
+    volumes:
+      - ~/.n8n:/root/.n8n
+    tty: true   # Emulates the '-it' portion
