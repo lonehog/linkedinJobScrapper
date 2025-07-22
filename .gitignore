@@ -3,3 +3,8 @@
 *.csv
 *.env
 *.md
+.scraper_final_backup.py
+.simple_test.py
+.test_api_local.py
+.test_auth.py
+.test_recent_jobs.py
