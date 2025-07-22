@@ -1,40 +1,45 @@
-# Use the official n8n image from Docker Hub
-FROM n8nio/n8n:latest
+# Use Ubuntu 22.04 as base image
+FROM ubuntu:22.04
 
-# Switch to root to install additional packages and Python dependencies
-USER root
+# Set environment variables to prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
-# Update Alpine package index and install Python3, pip, and the required Python libraries using apk
-RUN apk update && \
-    apk add --no-cache \
-      python3 \
-      py3-pip \
-      py3-requests \
-      py3-beautifulsoup4 \
-      py3-pandas \
-      py3-lxml
+# Set working directory
+WORKDIR /app
 
-# Set the working directory to /home/node/.n8n
-WORKDIR /home/node/
+# Update system and install Python and dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-dev \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install additional Python packages not available through apk
-RUN pip3 install python-dotenv
+# Create symbolic link for python command
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Copy your Python script, config file, and requirements into the working directory
-COPY scraper_final.py config.json requirements.txt ./
+# Copy requirements file
+COPY requirements.txt .
 
-# Copy .env file if it exists (for local builds)
-COPY .env* ./
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies from requirements.txt
-RUN pip3 install -r requirements.txt
+# Copy application files
+COPY . .
 
-# Change ownership of the copied files so that the 'node' user can access them
-RUN chown node:node config.json scraper_final.py requirements.txt && \
-    chmod 644 config.json scraper_final.py requirements.txt && \
-    chown node:node .env* 2>/dev/null || true && \
-    chmod 600 .env* 2>/dev/null || true
+# Create a non-root user for security
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
+USER appuser
 
-# Switch back to the default non-root user (typically 'node')
-USER node
-EXPOSE 5678
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Default command to run the API server
+CMD ["python", "app.py"] 

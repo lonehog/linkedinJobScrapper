@@ -22,7 +22,7 @@
     ],
     "REQUEST_TIMEOUT": 30,
     "PAGE_DELAY": 10,
-    "CSV_FILENAME": "recent_jobs_last_hour.csv",
+
     "INITIAL_HEADERS_COUNT": 10,
     "RANDOM_HEADERS_COUNT": 20,
     "MAX_ATTEMPTS": 3,

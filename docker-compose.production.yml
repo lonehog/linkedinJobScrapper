@@ -1,11 +1,14 @@
 version: '3.9'
 
+# Production docker-compose that uses pre-built images from GitHub Container Registry
+# Usage: docker-compose -f docker-compose.production.yml up -d
+
 services:
   linkedin-scraper-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: linkedin-scraper-api:latest
+    # Use the pre-built image from GitHub Container Registry
+    # Replace 'YOUR_USERNAME' with your actual GitHub username
+    image: ghcr.io/YOUR_USERNAME/n8n_linkedinjobscrapper:latest
+    
     container_name: linkedin-scraper-api
     restart: unless-stopped
     ports:
