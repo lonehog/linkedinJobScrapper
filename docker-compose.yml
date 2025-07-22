@@ -6,9 +6,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: n8n-python:latest  # Tag the built image as 'n8n-python:latest'
+    image: n8n-linkedin-auth:latest  # Tag the built image with auth support
 
-    container_name: n8n
+    container_name: n8n-linkedin-scraper
     restart: unless-stopped
     ports:
       - "5678:5678"
@@ -22,6 +22,40 @@ services:
       WEBHOOK_TUNNEL_URL: "https://n8n.cedric-coding-projects.com/"
       WEBHOOK_URL: "https://n8n.cedric-coding-projects.com/"
       N8N_SECURE_COOKIE: "true"
+      # LinkedIn Authentication (loaded from .env file)
+      LINKEDIN_EMAIL: ${LINKEDIN_EMAIL}
+      LINKEDIN_PASSWORD: ${LINKEDIN_PASSWORD}
+      DEBUG_MODE: ${DEBUG_MODE:-false}
     volumes:
       - ~/.n8n:/root/.n8n
+      - ./data:/home/node/data  # Mount data directory for CSV output
+      - ./.env:/home/node/.env:ro  # Mount .env file as read-only
+    networks:
+      - linkedin-scraper-network
     tty: true
+
+  # Optional: Add a dedicated scraper service that runs independently
+  linkedin-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: n8n-linkedin-auth:latest
+    container_name: linkedin-scraper-standalone
+    environment:
+      LINKEDIN_EMAIL: ${LINKEDIN_EMAIL}
+      LINKEDIN_PASSWORD: ${LINKEDIN_PASSWORD}
+      DEBUG_MODE: ${DEBUG_MODE:-false}
+    volumes:
+      - ./data:/home/node/data
+      - ./.env:/home/node/.env:ro
+    command: python3 scraper_final.py
+    networks:
+      - linkedin-scraper-network
+    depends_on:
+      - n8n
+    profiles:
+      - scraper  # Only start this service when 'scraper' profile is active
+
+networks:
+  linkedin-scraper-network:
+    driver: bridge

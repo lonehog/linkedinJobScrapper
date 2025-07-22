@@ -1,32 +1,33 @@
 {
     "BASE_LIST_URL": "https://www.linkedin.com/jobs/search/",
-    "BASE_JOB_URL": "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{}",
-    "NUM_JOBS_PER_QUERY": 500,
-    "SEARCH_QUERIES": [
+    "BASE_JOB_URL": "https://www.linkedin.com/jobs/view/{}/",
+    "MAX_PAGES_PER_SEARCH": 1,
+    "FILTER_EASY_APPLY": false,
+    "SEARCH_URLS": [
       {
-        "keywords": "electrical engineering",
-        "location": "Belgium",
-        "f_E": "1"
+        "name": "Firmware Jobs - Last Hour",
+        "url": "https://www.linkedin.com/jobs/search/?f_E=2&f_TPR=r3600&geoId=101282230&keywords=firmware&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true",
+        "description": "Firmware jobs posted in last hour"
       },
       {
-        "keywords": "IT engineering",
-        "location": "Belgium",
-        "f_E": "1"
+        "name": "Embedded Jobs - Last Hour", 
+        "url": "https://www.linkedin.com/jobs/search/?f_E=2&f_TPR=r3600&geoId=101282230&keywords=embedded&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true",
+        "description": "Embedded developer jobs posted in last hour"
       },
       {
-        "keywords": "Telecom engineering",
-        "location": "Belgium",
-        "f_E": "1"
+        "name": "Hardware Jobs - Last Hour", 
+        "url": "https://www.linkedin.com/jobs/search/?f_E=2&f_TPR=r3600&geoId=101282230&keywords=hardware&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true",
+        "description": "Hardware developer jobs posted in last hour"
       }
     ],
     "REQUEST_TIMEOUT": 30,
     "PAGE_DELAY": 10,
-    "CSV_FILENAME": "job_listing.csv",
+    "CSV_FILENAME": "recent_jobs_last_hour.csv",
     "INITIAL_HEADERS_COUNT": 10,
     "RANDOM_HEADERS_COUNT": 20,
     "MAX_ATTEMPTS": 3,
-    "RETRY_WAIT_429": 3,
-    "RETRY_WAIT_NON_429": 60,
+    "RETRY_WAIT_429": 5,
+    "RETRY_WAIT_NON_429": 30,
     "OUTPUT_FIELDS": [
       "job_id",
       "job_url",
@@ -36,7 +37,9 @@
       "num_applicants",
       "job_location",
       "experience_needed",
-      "description_content"
+      "description_content",
+      "has_easy_apply",
+      "application_type"
     ]
   }
   
