@@ -2,8 +2,6 @@
 
 A Docker-based API server for scraping LinkedIn job listings. This application converts job search results into JSON format instead of CSV files, making it perfect for integration with other applications.
 
-⚠️ Disclaimer
-This project is intended for educational purposes only. The use of web scraping to collect data from LinkedIn or any other website may violate the terms of service of those websites. Please ensure that you have the necessary permissions and comply with all applicable laws and regulations before using this scraper. The authors of this project are not responsible for any misuse or legal consequences resulting from the use of this tool.
 
 ## Features
 
@@ -13,6 +11,10 @@ This project is intended for educational purposes only. The use of web scraping 
 - **Configurable**: Support for custom search parameters
 - **Authentication**: Supports both LinkedIn credentials and session cookies
 - **Rate Limiting**: Built-in delays and retry logic to respect LinkedIn's limits
+
+⚠️ Disclaimer
+This project is intended for educational purposes only. The use of web scraping to collect data from LinkedIn or any other website may violate the terms of service of those websites. Please ensure that you have the necessary permissions and comply with all applicable laws and regulations before using this scraper. The authors of this project are not responsible for any misuse or legal consequences resulting from the use of this tool.
+
 
 ## Quick Start
 
