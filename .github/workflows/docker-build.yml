@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - dev
     tags:
       - 'v*'
   pull_request:
@@ -38,44 +39,26 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Generate tags and labels
+    - name: Extract metadata
       id: meta
-      run: |
-        IMAGE_BASE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
-        
-        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-          # For PRs, use pr-<number>
-          TAGS="${IMAGE_BASE}:pr-${{ github.event.number }}"
-        elif [[ "${{ github.ref }}" == "refs/heads/main" ]] || [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-          # For main/master branch, use latest and sha
-          TAGS="${IMAGE_BASE}:latest,${IMAGE_BASE}:${{ github.sha }}"
-        elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-          # For version tags, use the tag name and latest
-          VERSION=${GITHUB_REF#refs/tags/v}
-          TAGS="${IMAGE_BASE}:${VERSION},${IMAGE_BASE}:latest"
-        else
-          # For other branches, use branch name and sha
-          BRANCH_NAME=$(echo "${{ github.ref }}" | sed 's/refs\/heads\///')
-          TAGS="${IMAGE_BASE}:${BRANCH_NAME},${IMAGE_BASE}:${{ github.sha }}"
-        fi
-        
-        echo "tags=${TAGS}" >> $GITHUB_OUTPUT
-        echo "Generated tags: ${TAGS}"
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
 
     - name: Build and push Docker image
-      id: build
       uses: docker/build-push-action@v5
       with:
         context: .
         platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
-        labels: |
-          org.opencontainers.image.title=LinkedIn Job Scraper
-          org.opencontainers.image.description=Docker image with API to scrape jobs from LinkedIn
-          org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          org.opencontainers.image.revision=${{ github.sha }}
-          org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
