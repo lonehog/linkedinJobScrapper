@@ -3,15 +3,9 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - main
-      - master
       - dev
-    tags:
-      - 'v*'
+  
   pull_request:
-    branches:
-      - main
-      - master
     tags:
       - 'v*'
 
@@ -41,6 +35,16 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Sanitize tag for versioned branches
+      id: sanitize
+      run: |
+        if [[ ${{ github.ref_name }} =~ ^v[0-9]+\.[0-9]+ ]]; then
+          SANITIZED_TAG=${{ github.ref_name }} # Keep v1.0 as is
+          echo "TAG=$SANITIZED_TAG" >> $GITHUB_ENV
+        else
+          echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+        fi
+
     - name: Extract metadata
       id: meta
       uses: docker/metadata-action@v5
@@ -52,8 +56,10 @@ jobs:
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
           type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=${{ env.TAG }}  # Use sanitized tag
 
     - name: Build and push Docker image
+      id: build
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -65,4 +71,4 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Image digest
-      run: echo ${{ steps.build.outputs.digest }} 
+      run: echo ${{ steps.build.outputs.digest }}
