@@ -1,9 +1,10 @@
+version: '3.8'
+
 services:
   linkedin-scraper-api:
     build:
       context: .
       dockerfile: Dockerfile
-    image: linkedin-scraper-api:latest
     container_name: linkedin-scraper-api
     restart: unless-stopped
     ports:

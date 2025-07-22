@@ -2,6 +2,7 @@
     "BASE_LIST_URL": "https://www.linkedin.com/jobs/search/",
     "BASE_JOB_URL": "https://www.linkedin.com/jobs/view/{}/",
     "MAX_PAGES_PER_SEARCH": 1,
+    "CSV_FILENAME" : "saved_jobs.csv",
     "FILTER_EASY_APPLY": false,
     "SEARCH_URLS": [
       {
